@@ -1,0 +1,55 @@
+{
+  "name": "fitness-tracker-backend",
+  "version": "2.0.0",
+  "description": "Complete Fitness & Workout Tracking App Backend API",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js",
+    "seed": "node src/seeders/exerciseSeeder.js",
+    "seed:exercises": "node src/seeders/exerciseSeeder.js"
+  },
+  "keywords": [
+    "fitness",
+    "workout",
+    "tracker",
+    "api",
+    "express",
+    "mongodb",
+    "nodejs"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.6",
+    "dotenv": "^16.6.1",
+    "express": "^4.22.2",
+    "express-validator": "^7.3.2",
+    "helmet": "^7.2.0",
+    "joi": "^17.13.4",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^7.8.10",
+    "morgan": "^1.11.0",
+    "swagger-jsdoc": "^6.3.0",
+    "swagger-ui-express": "^4.6.3",
+    "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VasaJahnavi/fitness-tracker-backend.git"
+  },
+  "bugs": {
+    "url": "https://github.com/VasaJahnavi/fitness-tracker-backend/issues"
+  },
+  "homepage": "https://github.com/VasaJahnavi/fitness-tracker-backend#readme"
+}
