@@ -3,6 +3,8 @@ services:
     name: fitness-tracker-backend
     runtime: node
     plan: free
+    buildCommand: npm install
+    startCommand: node src/app.js
     envVars:
       - key: NODE_ENV
         value: production
@@ -14,3 +16,5 @@ services:
         value: 7d
       - key: BCRYPT_SALT_ROUNDS
         value: 10
+      - key: PORT
+        value: 10000
