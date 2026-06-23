@@ -1,0 +1,2491 @@
+openapi: 3.0.0
+info:
+  title: Fitness & Workout Tracking API
+  description: |
+    A comprehensive backend API for fitness tracking and workout management.
+    This API provides endpoints for user management, workout tracking, 
+    exercise management, goal setting, and fitness analytics.
+  version: 2.0.0
+  contact:
+    name: API Support
+    email: support@fitnessapp.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:5000/api
+    description: Development Server
+  - url: https://your-production-url.com/api
+    description: Production Server
+
+tags:
+  - name: Authentication
+    description: User authentication endpoints
+  - name: Users
+    description: User profile and settings management
+  - name: Exercises
+    description: Exercise library management
+  - name: Workouts
+    description: Workout plan management
+  - name: Goals
+    description: Fitness goal management
+  - name: Activities
+    description: Workout activity tracking
+  - name: Analytics
+    description: Progress analytics and reports
+  - name: Recommendations
+    description: Personalized workout recommendations
+  - name: Dashboard
+    description: User dashboard endpoints
+  - name: Health
+    description: System health and status
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  
+  schemas:
+    # ============ USER SCHEMAS ============
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "60d5f9f9b8e9a7a6c4e8f9d2"
+        name:
+          type: string
+          example: "John Doe"
+        email:
+          type: string
+          example: "john@example.com"
+        age:
+          type: number
+          example: 28
+        gender:
+          type: string
+          enum: [male, female, other, prefer-not-to-say]
+        height:
+          type: number
+          example: 175
+        weight:
+          type: number
+          example: 75
+        fitnessLevel:
+          type: string
+          enum: [beginner, intermediate, advanced]
+        fitnessGoals:
+          type: array
+          items:
+            type: string
+            enum: [lose-weight, gain-muscle, improve-cardio, increase-strength, flexibility]
+        preferences:
+          type: object
+          properties:
+            preferredWorkoutDays:
+              type: array
+              items:
+                type: number
+            preferredWorkoutTime:
+              type: string
+              enum: [morning, afternoon, evening, night]
+            preferredWorkoutTypes:
+              type: array
+              items:
+                type: string
+                enum: [strength-training, cardio, yoga, hiit, flexibility]
+        settings:
+          type: object
+          properties:
+            language:
+              type: string
+              enum: [en, es, fr, de, zh, ja]
+            timezone:
+              type: string
+            units:
+              type: object
+              properties:
+                weight:
+                  type: string
+                  enum: [kg, lbs]
+                height:
+                  type: string
+                  enum: [cm, ft]
+                distance:
+                  type: string
+                  enum: [km, mi]
+        totalWorkouts:
+          type: number
+          example: 45
+        totalCaloriesBurned:
+          type: number
+          example: 15000
+        streakCount:
+          type: number
+          example: 7
+        profileCompletion:
+          type: number
+          example: 85
+        createdAt:
+          type: string
+          format: date-time
+
+    # ============ AUTH SCHEMAS ============
+    AuthResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "Login successful"
+        data:
+          type: object
+          properties:
+            user:
+              $ref: '#/components/schemas/User'
+            token:
+              type: string
+              example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        timestamp:
+          type: string
+          format: date-time
+
+    RegisterRequest:
+      type: object
+      required:
+        - name
+        - email
+        - password
+      properties:
+        name:
+          type: string
+          example: "John Doe"
+        email:
+          type: string
+          example: "john@example.com"
+        password:
+          type: string
+          example: "password123"
+          minLength: 6
+        age:
+          type: number
+          example: 28
+        gender:
+          type: string
+          enum: [male, female, other]
+        height:
+          type: number
+          example: 175
+        weight:
+          type: number
+          example: 75
+        fitnessLevel:
+          type: string
+          enum: [beginner, intermediate, advanced]
+
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          example: "john@example.com"
+        password:
+          type: string
+          example: "password123"
+
+    # ============ EXERCISE SCHEMAS ============
+    Exercise:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+          example: "Bench Press"
+        category:
+          type: string
+          enum: [strength-training, cardio, yoga, hiit, flexibility]
+        muscleGroup:
+          type: array
+          items:
+            type: string
+            enum: [chest, back, shoulders, biceps, triceps, legs, glutes, core, cardio, full-body]
+        difficultyLevel:
+          type: string
+          enum: [beginner, intermediate, advanced]
+        caloriesPerMinute:
+          type: number
+          example: 5.5
+        description:
+          type: string
+        instructions:
+          type: array
+          items:
+            type: string
+        equipmentNeeded:
+          type: array
+          items:
+            type: string
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+
+    CreateExerciseRequest:
+      type: object
+      required:
+        - name
+        - category
+        - muscleGroup
+        - caloriesPerMinute
+      properties:
+        name:
+          type: string
+        category:
+          type: string
+          enum: [strength-training, cardio, yoga, hiit, flexibility]
+        muscleGroup:
+          type: array
+          items:
+            type: string
+        difficultyLevel:
+          type: string
+          enum: [beginner, intermediate, advanced]
+        caloriesPerMinute:
+          type: number
+        description:
+          type: string
+        instructions:
+          type: array
+          items:
+            type: string
+        equipmentNeeded:
+          type: array
+          items:
+            type: string
+
+    # ============ WORKOUT SCHEMAS ============
+    WorkoutPlan:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+          example: "Full Body Strength"
+        description:
+          type: string
+        category:
+          type: string
+          enum: [strength-training, cardio, yoga, hiit, flexibility]
+        difficultyLevel:
+          type: string
+          enum: [beginner, intermediate, advanced]
+        duration:
+          type: number
+          example: 45
+        exercises:
+          type: array
+          items:
+            type: object
+            properties:
+              exerciseId:
+                type: string
+              sets:
+                type: number
+              reps:
+                type: number
+              duration:
+                type: number
+              restTime:
+                type: number
+              order:
+                type: number
+        totalCalories:
+          type: number
+        isPublic:
+          type: boolean
+        tags:
+          type: array
+          items:
+            type: string
+        createdBy:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    CreateWorkoutRequest:
+      type: object
+      required:
+        - name
+        - category
+        - duration
+        - exercises
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+          enum: [strength-training, cardio, yoga, hiit, flexibility]
+        difficultyLevel:
+          type: string
+          enum: [beginner, intermediate, advanced]
+        duration:
+          type: number
+        exercises:
+          type: array
+          items:
+            type: object
+            properties:
+              exerciseId:
+                type: string
+              sets:
+                type: number
+              reps:
+                type: number
+              duration:
+                type: number
+              restTime:
+                type: number
+              order:
+                type: number
+        tags:
+          type: array
+          items:
+            type: string
+        isPublic:
+          type: boolean
+
+    # ============ GOAL SCHEMAS ============
+    Goal:
+      type: object
+      properties:
+        id:
+          type: string
+        user:
+          type: string
+        type:
+          type: string
+          enum: [weight-loss, weight-gain, daily-exercise, weekly-workout, strength, cardio]
+        targetValue:
+          type: number
+        currentValue:
+          type: number
+        targetUnit:
+          type: string
+          enum: [kg, lbs, minutes, hours, sessions, reps]
+        startDate:
+          type: string
+          format: date-time
+        targetDate:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: [active, completed, failed, paused]
+        progress:
+          type: number
+          min: 0
+          max: 100
+        notes:
+          type: string
+        completionDate:
+          type: string
+          format: date-time
+
+    CreateGoalRequest:
+      type: object
+      required:
+        - type
+        - targetValue
+        - targetUnit
+        - targetDate
+      properties:
+        type:
+          type: string
+          enum: [weight-loss, weight-gain, daily-exercise, weekly-workout, strength, cardio]
+        targetValue:
+          type: number
+        targetUnit:
+          type: string
+          enum: [kg, lbs, minutes, hours, sessions, reps]
+        targetDate:
+          type: string
+          format: date-time
+        notes:
+          type: string
+
+    # ============ ACTIVITY SCHEMAS ============
+    WorkoutLog:
+      type: object
+      properties:
+        id:
+          type: string
+        user:
+          type: string
+        workoutPlanId:
+          type: string
+        date:
+          type: string
+          format: date-time
+        duration:
+          type: number
+        exercises:
+          type: array
+          items:
+            type: object
+            properties:
+              exerciseId:
+                type: string
+              sets:
+                type: number
+              reps:
+                type: number
+              weight:
+                type: number
+              duration:
+                type: number
+              caloriesBurned:
+                type: number
+              notes:
+                type: string
+        totalCaloriesBurned:
+          type: number
+        perceivedExertion:
+          type: number
+          min: 1
+          max: 10
+        notes:
+          type: string
+        mood:
+          type: string
+          enum: [great, good, okay, tired, exhausted]
+        createdAt:
+          type: string
+          format: date-time
+
+    LogWorkoutRequest:
+      type: object
+      required:
+        - duration
+        - exercises
+      properties:
+        workoutPlanId:
+          type: string
+        date:
+          type: string
+          format: date-time
+        duration:
+          type: number
+        exercises:
+          type: array
+          items:
+            type: object
+            properties:
+              exerciseId:
+                type: string
+              sets:
+                type: number
+              reps:
+                type: number
+              weight:
+                type: number
+              duration:
+                type: number
+              caloriesBurned:
+                type: number
+              notes:
+                type: string
+        perceivedExertion:
+          type: number
+          min: 1
+          max: 10
+        notes:
+          type: string
+        mood:
+          type: string
+          enum: [great, good, okay, tired, exhausted]
+
+    # ============ ANALYTICS SCHEMAS ============
+    AnalyticsSummary:
+      type: object
+      properties:
+        period:
+          type: string
+        dateRange:
+          type: object
+          properties:
+            start:
+              type: string
+              format: date-time
+            end:
+              type: string
+              format: date-time
+        workouts:
+          type: object
+          properties:
+            totalWorkouts:
+              type: number
+            totalDuration:
+              type: number
+            avgDuration:
+              type: number
+            totalCalories:
+              type: number
+            avgCalories:
+              type: number
+        goals:
+          type: object
+          properties:
+            total:
+              type: number
+            completed:
+              type: number
+            completionRate:
+              type: number
+        progress:
+          type: object
+        calories:
+          type: object
+        fitnessScore:
+          type: number
+        streak:
+          type: object
+
+    # ============ RECOMMENDATION SCHEMAS ============
+    Recommendation:
+      type: object
+      properties:
+        id:
+          type: string
+        user:
+          type: string
+        type:
+          type: string
+          enum: [workout-plan, exercise, daily-activity]
+        recommendation:
+          type: object
+        reason:
+          type: string
+        confidenceScore:
+          type: number
+        isViewed:
+          type: boolean
+        isAccepted:
+          type: boolean
+        isCompleted:
+          type: boolean
+        expiresAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+
+    # ============ DASHBOARD SCHEMAS ============
+    Dashboard:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+        today:
+          type: object
+          properties:
+            workout:
+              $ref: '#/components/schemas/WorkoutLog'
+            recommendation:
+              type: object
+        weekly:
+          type: object
+          properties:
+            totalWorkouts:
+              type: number
+            totalCalories:
+              type: number
+            totalDuration:
+              type: number
+            daysActive:
+              type: number
+        goals:
+          type: object
+          properties:
+            active:
+              type: array
+              items:
+                $ref: '#/components/schemas/Goal'
+            stats:
+              type: object
+        recentWorkouts:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkoutLog'
+        progress:
+          type: object
+        streak:
+          type: object
+          properties:
+            current:
+              type: number
+            longest:
+              type: number
+        suggestedWorkouts:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkoutPlan'
+
+    # ============ ERROR SCHEMA ============
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+              message:
+                type: string
+        timestamp:
+          type: string
+          format: date-time
+
+paths:
+  # ============ AUTH ENDPOINTS ============
+  /auth/register:
+    post:
+      summary: Register a new user
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        201:
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/login:
+    post:
+      summary: Login user
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        200:
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        401:
+          description: Invalid credentials
+
+  /auth/me:
+    get:
+      summary: Get current user profile
+      tags: [Authentication]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: User profile retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/User'
+
+  /auth/logout:
+    post:
+      summary: Logout user
+      tags: [Authentication]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Logged out successfully
+
+  # ============ USER ENDPOINTS ============
+  /users/profile:
+    put:
+      summary: Update user profile
+      tags: [Users]
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        200:
+          description: Profile updated
+
+  /users/metrics:
+    put:
+      summary: Update health metrics
+      tags: [Users]
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                height:
+                  type: number
+                weight:
+                  type: number
+                age:
+                  type: number
+      responses:
+        200:
+          description: Metrics updated
+
+  /users/preferences:
+    put:
+      summary: Update fitness preferences
+      tags: [Users]
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                preferredWorkoutDays:
+                  type: array
+                  items:
+                    type: number
+                preferredWorkoutTime:
+                  type: string
+                  enum: [morning, afternoon, evening, night]
+                preferredWorkoutTypes:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        200:
+          description: Preferences updated
+
+  /users/stats:
+    get:
+      summary: Get user statistics
+      tags: [Users]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [week, month, quarter, year]
+            description: Time period for stats
+      responses:
+        200:
+          description: Statistics retrieved
+
+  /users/settings:
+    get:
+      summary: Get user settings
+      tags: [Users]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Settings retrieved
+    
+    put:
+      summary: Update user settings
+      tags: [Users]
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                language:
+                  type: string
+                  enum: [en, es, fr, de, zh, ja]
+                timezone:
+                  type: string
+                units:
+                  type: object
+                  properties:
+                    weight:
+                      type: string
+                      enum: [kg, lbs]
+                    height:
+                      type: string
+                      enum: [cm, ft]
+                    distance:
+                      type: string
+                      enum: [km, mi]
+      responses:
+        200:
+          description: Settings updated
+
+  /users/email:
+    put:
+      summary: Update user email
+      tags: [Users]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - newEmail
+                - password
+              properties:
+                newEmail:
+                  type: string
+                password:
+                  type: string
+      responses:
+        200:
+          description: Email updated
+
+  /users/notifications:
+    get:
+      summary: Get notification preferences
+      tags: [Users]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Notification preferences retrieved
+    
+    put:
+      summary: Update notification preferences
+      tags: [Users]
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: object
+                  properties:
+                    enabled:
+                      type: boolean
+                    frequency:
+                      type: string
+                      enum: [instant, daily, weekly]
+                    types:
+                      type: array
+                      items:
+                        type: string
+                push:
+                  type: object
+                  properties:
+                    enabled:
+                      type: boolean
+                    types:
+                      type: array
+                      items:
+                        type: string
+      responses:
+        200:
+          description: Notification preferences updated
+
+  /users/account:
+    delete:
+      summary: Delete user account
+      tags: [Users]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - password
+                - confirm
+              properties:
+                password:
+                  type: string
+                confirm:
+                  type: boolean
+      responses:
+        200:
+          description: Account deleted
+
+  # ============ EXERCISE ENDPOINTS ============
+  /exercises:
+    get:
+      summary: Get all exercises
+      tags: [Exercises]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: muscleGroup
+          in: query
+          schema:
+            type: string
+        - name: difficultyLevel
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: number
+        - name: limit
+          in: query
+          schema:
+            type: number
+      responses:
+        200:
+          description: Exercises retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      exercises:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Exercise'
+                      pagination:
+                        type: object
+    
+    post:
+      summary: Create a new exercise
+      tags: [Exercises]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateExerciseRequest'
+      responses:
+        201:
+          description: Exercise created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Exercise'
+
+  /exercises/{id}:
+    get:
+      summary: Get exercise by ID
+      tags: [Exercises]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Exercise retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Exercise'
+        404:
+          description: Exercise not found
+
+    put:
+      summary: Update exercise
+      tags: [Exercises]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateExerciseRequest'
+      responses:
+        200:
+          description: Exercise updated
+
+    delete:
+      summary: Delete exercise
+      tags: [Exercises]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Exercise deleted
+
+  /exercises/muscle/{muscleGroup}:
+    get:
+      summary: Get exercises by muscle group
+      tags: [Exercises]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: muscleGroup
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Exercises retrieved
+
+  # ============ WORKOUT ENDPOINTS ============
+  /workouts:
+    get:
+      summary: Get all workout plans
+      tags: [Workouts]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: difficultyLevel
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: number
+        - name: limit
+          in: query
+          schema:
+            type: number
+      responses:
+        200:
+          description: Workout plans retrieved
+    
+    post:
+      summary: Create a workout plan
+      tags: [Workouts]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateWorkoutRequest'
+      responses:
+        201:
+          description: Workout plan created
+
+  /workouts/my-workouts:
+    get:
+      summary: Get user's workout plans
+      tags: [Workouts]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: User's workout plans retrieved
+
+  /workouts/public:
+    get:
+      summary: Get public workout plans
+      tags: [Workouts]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Public workout plans retrieved
+
+  /workouts/category/{category}:
+    get:
+      summary: Get workouts by category
+      tags: [Workouts]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: category
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Workouts retrieved
+
+  /workouts/{id}:
+    get:
+      summary: Get workout plan by ID
+      tags: [Workouts]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Workout plan retrieved
+    
+    put:
+      summary: Update workout plan
+      tags: [Workouts]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateWorkoutRequest'
+      responses:
+        200:
+          description: Workout plan updated
+    
+    delete:
+      summary: Delete workout plan
+      tags: [Workouts]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Workout plan deleted
+
+  /workouts/{id}/duplicate:
+    post:
+      summary: Duplicate a workout plan
+      tags: [Workouts]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        201:
+          description: Workout plan duplicated
+
+  /workouts/{id}/toggle-visibility:
+    put:
+      summary: Toggle workout visibility
+      tags: [Workouts]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Visibility toggled
+
+  /workouts/{id}/exercises:
+    post:
+      summary: Add exercise to workout
+      tags: [Workouts]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                exerciseId:
+                  type: string
+                sets:
+                  type: number
+                reps:
+                  type: number
+                duration:
+                  type: number
+                restTime:
+                  type: number
+      responses:
+        200:
+          description: Exercise added
+
+  /workouts/{workoutId}/exercises/{exerciseId}:
+    delete:
+      summary: Remove exercise from workout
+      tags: [Workouts]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: workoutId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: exerciseId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Exercise removed
+
+  # ============ GOAL ENDPOINTS ============
+  /goals:
+    get:
+      summary: Get user goals
+      tags: [Goals]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [active, completed, failed, paused]
+        - name: type
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: number
+        - name: limit
+          in: query
+          schema:
+            type: number
+      responses:
+        200:
+          description: Goals retrieved
+    
+    post:
+      summary: Create a goal
+      tags: [Goals]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateGoalRequest'
+      responses:
+        201:
+          description: Goal created
+
+  /goals/stats:
+    get:
+      summary: Get goal statistics
+      tags: [Goals]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Goal statistics retrieved
+
+  /goals/{id}:
+    get:
+      summary: Get goal by ID
+      tags: [Goals]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Goal retrieved
+    
+    put:
+      summary: Update goal
+      tags: [Goals]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                targetValue:
+                  type: number
+                targetUnit:
+                  type: string
+                targetDate:
+                  type: string
+                  format: date-time
+                status:
+                  type: string
+                  enum: [active, completed, failed, paused]
+                notes:
+                  type: string
+      responses:
+        200:
+          description: Goal updated
+    
+    delete:
+      summary: Delete goal
+      tags: [Goals]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Goal deleted
+
+  /goals/{id}/progress:
+    put:
+      summary: Update goal progress
+      tags: [Goals]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - currentValue
+              properties:
+                currentValue:
+                  type: number
+      responses:
+        200:
+          description: Progress updated
+
+  # ============ ACTIVITY ENDPOINTS ============
+  /activities:
+    get:
+      summary: Get workout history
+      tags: [Activities]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: page
+          in: query
+          schema:
+            type: number
+        - name: limit
+          in: query
+          schema:
+            type: number
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+            enum: [date, duration, totalCaloriesBurned]
+        - name: sortOrder
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
+      responses:
+        200:
+          description: Workout history retrieved
+    
+    post:
+      summary: Log a workout
+      tags: [Activities]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LogWorkoutRequest'
+      responses:
+        201:
+          description: Workout logged
+
+  /activities/summary:
+    get:
+      summary: Get workout summary
+      tags: [Activities]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Summary retrieved
+
+  /activities/{id}:
+    get:
+      summary: Get workout log by ID
+      tags: [Activities]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Workout log retrieved
+    
+    put:
+      summary: Update workout log
+      tags: [Activities]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LogWorkoutRequest'
+      responses:
+        200:
+          description: Workout log updated
+    
+    delete:
+      summary: Delete workout log
+      tags: [Activities]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Workout log deleted
+
+  # ============ ANALYTICS ENDPOINTS ============
+  /analytics/summary:
+    get:
+      summary: Get analytics summary
+      tags: [Analytics]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [week, month, quarter, year]
+      responses:
+        200:
+          description: Analytics summary retrieved
+
+  /analytics/progress:
+    get:
+      summary: Get progress data
+      tags: [Analytics]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: metric
+          in: query
+          schema:
+            type: string
+            enum: [workouts, calories, duration, weight, strength]
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [week, month, quarter, year]
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        200:
+          description: Progress data retrieved
+
+  /analytics/workouts:
+    get:
+      summary: Get workout analytics
+      tags: [Analytics]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [week, month, quarter, year]
+      responses:
+        200:
+          description: Workout analytics retrieved
+
+  /analytics/goals:
+    get:
+      summary: Get goal analytics
+      tags: [Analytics]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Goal analytics retrieved
+
+  /analytics/calories:
+    get:
+      summary: Get calorie analytics
+      tags: [Analytics]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [week, month, quarter, year]
+      responses:
+        200:
+          description: Calorie analytics retrieve
+          /analytics/workouts:
+    get:
+      summary: Get workout analytics
+      tags: [Analytics]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [week, month, quarter, year]
+      responses:
+        200:
+          description: Workout analytics retrieved
+
+  /analytics/goals:
+    get:
+      summary: Get goal analytics
+      tags: [Analytics]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Goal analytics retrieved
+
+  /analytics/calories:
+    get:
+      summary: Get calorie analytics
+      tags: [Analytics]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [week, month, quarter, year]
+      responses:
+        200:
+          description: Calorie analytics retrieved
+
+  /analytics/report:
+    get:
+      summary: Generate performance report
+      tags: [Analytics]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [week, month, quarter, year]
+      responses:
+        200:
+          description: Performance report generated
+
+  /analytics/trends:
+    get:
+      summary: Get workout trends
+      tags: [Analytics]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [week, month, quarter, year]
+      responses:
+        200:
+          description: Workout trends retrieved
+
+  /analytics/fitness-score:
+    get:
+      summary: Get fitness score
+      tags: [Analytics]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Fitness score retrieved
+
+  # ============ RECOMMENDATION ENDPOINTS ============
+  /recommendations:
+    get:
+      summary: Get all recommendations
+      tags: [Recommendations]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [workout-plan, exercise, daily-activity]
+        - name: page
+          in: query
+          schema:
+            type: number
+        - name: limit
+          in: query
+          schema:
+            type: number
+      responses:
+        200:
+          description: Recommendations retrieved
+
+  /recommendations/workouts:
+    get:
+      summary: Get workout recommendations
+      tags: [Recommendations]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: number
+      responses:
+        200:
+          description: Workout recommendations retrieved
+
+  /recommendations/exercises:
+    get:
+      summary: Get exercise recommendations
+      tags: [Recommendations]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: number
+      responses:
+        200:
+          description: Exercise recommendations retrieved
+
+  /recommendations/daily:
+    get:
+      summary: Get daily recommendation
+      tags: [Recommendations]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Daily recommendation retrieved
+
+  /recommendations/stats:
+    get:
+      summary: Get recommendation stats
+      tags: [Recommendations]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Recommendation stats retrieved
+
+  /recommendations/generate:
+    post:
+      summary: Generate recommendations
+      tags: [Recommendations]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Recommendations generated
+
+  /recommendations/{id}/accept:
+    put:
+      summary: Accept a recommendation
+      tags: [Recommendations]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Recommendation accepted
+
+  /recommendations/{id}/reject:
+    put:
+      summary: Reject a recommendation
+      tags: [Recommendations]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Recommendation rejected
+          # ============ DASHBOARD ENDPOINTS ============
+  /dashboard:
+    get:
+      summary: Get dashboard data
+      tags: [Dashboard]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [today, week, month]
+      responses:
+        200:
+          description: Dashboard data retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Dashboard'
+
+  /dashboard/today:
+    get:
+      summary: Get today's workout
+      tags: [Dashboard]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Today's workout retrieved
+
+  /dashboard/weekly:
+    get:
+      summary: Get weekly summary
+      tags: [Dashboard]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Weekly summary retrieved
+
+  # ============ HEALTH ENDPOINTS ============
+  /health:
+    get:
+      summary: Health check
+      tags: [Health]
+      responses:
+        200:
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  message:
+                    type: string
+                    example: Fitness Tracker API is running
+                  timestamp:
+                    type: string
+                    format: date-time
+
+  /:
+    get:
+      summary: Welcome
+      tags: [Health]
+      responses:
+        200:
+          description: Welcome message
+```
+
+---
+
+📄 4. Create Postman Collection (postman/Fitness Tracker API.postman_collection.json)
+
+Create a folder called postman and add this file:
+
+```json
+{
+  "info": {
+    "name": "Fitness Tracker API",
+    "description": "Complete API collection for Fitness & Workout Tracking App",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "2.0.0"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/register",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\",\n  \"age\": 28,\n  \"gender\": \"male\",\n  \"height\": 175,\n  \"weight\": 75\n}"
+            }
+          }
+        },
+        {
+          "name": "Login User",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/login",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.token) {",
+                  "  pm.collectionVariables.set('token', jsonData.data.token);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/auth/me",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/logout",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/users/profile",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Smith\",\n  \"age\": 29,\n  \"gender\": \"male\",\n  \"height\": 178,\n  \"weight\": 72,\n  \"fitnessLevel\": \"intermediate\",\n  \"fitnessGoals\": [\"gain-muscle\", \"improve-cardio\"]\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Metrics",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/users/metrics",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"height\": 178,\n  \"weight\": 72,\n  \"age\": 29\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Preferences",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/users/preferences",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"preferredWorkoutDays\": [1, 3, 5],\n  \"preferredWorkoutTime\": \"morning\",\n  \"preferredWorkoutTypes\": [\"strength-training\", \"cardio\"]\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Stats",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/users/stats?period=month",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get Settings",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/users/settings",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Update Settings",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/users/settings",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"language\": \"en\",\n  \"timezone\": \"America/New_York\",\n  \"units\": {\n    \"weight\": \"kg\",\n    \"height\": \"cm\",\n    \"distance\": \"km\"\n  }\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Exercises",
+      "item": [
+        {
+          "name": "Get All Exercises",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/exercises?page=1&limit=10",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Create Exercise",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/exercises",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Push-up\",\n  \"category\": \"strength-training\",\n  \"muscleGroup\": [\"chest\", \"triceps\", \"shoulders\"],\n  \"difficultyLevel\": \"beginner\",\n  \"caloriesPerMinute\": 4.0,\n  \"description\": \"A bodyweight exercise that targets the chest, triceps, and shoulders.\",\n  \"instructions\": [\"Start in plank position\", \"Lower body\", \"Push back up\"],\n  \"equipmentNeeded\": []\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Workouts",
+      "item": [
+        {
+          "name": "Get Workout Plans",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/workouts?page=1&limit=10",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Create Workout Plan",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/workouts",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Full Body Strength\",\n  \"description\": \"A complete full body workout\",\n  \"category\": \"strength-training\",\n  \"difficultyLevel\": \"intermediate\",\n  \"duration\": 45,\n  \"exercises\": [\n    {\n      \"exerciseId\": \"EXERCISE_ID_1\",\n      \"sets\": 4,\n      \"reps\": 10,\n      \"duration\": 15,\n      \"restTime\": 60\n    }\n  ],\n  \"tags\": [\"strength\", \"full-body\"],\n  \"isPublic\": false\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+    "name": "Goals",
+      "item": [
+        {
+          "name": "Get Goals",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/goals?status=active",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Create Goal",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/goals",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"weight-loss\",\n  \"targetValue\": 5,\n  \"targetUnit\": \"kg\",\n  \"targetDate\": \"2026-12-31T23:59:59.999Z\",\n  \"notes\": \"Lose 5 kg by end of year\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Activities",
+      "item": [
+        {
+          "name": "Log Workout",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/activities",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"duration\": 45,\n  \"exercises\": [\n    {\n      \"exerciseId\": \"EXERCISE_ID\",\n      \"sets\": 4,\n      \"reps\": 10,\n      \"weight\": 60,\n      \"duration\": 15,\n      \"caloriesBurned\": 120\n    }\n  ],\n  \"perceivedExertion\": 7,\n  \"mood\": \"great\",\n  \"notes\": \"Good workout today\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Workout History",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/activities?page=1&limit=10",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Analytics",
+      "item": [
+        {
+          "name": "Get Summary",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/analytics/summary?period=month",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get Progress",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/analytics/progress?metric=workouts&period=month",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get Fitness Score",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/analytics/fitness-score",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Recommendations",
+      "item": [
+        {
+          "name": "Get Recommendations",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/recommendations",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get Workout Recommendations",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/recommendations/workouts?limit=5",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get Daily Recommendation",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/recommendations/daily",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Get Dashboard",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/dashboard",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get Weekly Summary",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/dashboard/weekly",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/health"
+          }
+        },
+        {
+          "name": "Welcome",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/"
+          }
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  }
+}

@@ -1,0 +1,519 @@
+{
+  "info": {
+    "name": "Fitness Tracker API",
+    "description": "Complete API collection for Fitness & Workout Tracking App",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "2.0.0"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/register",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\",\n  \"age\": 28,\n  \"gender\": \"male\",\n  \"height\": 175,\n  \"weight\": 75\n}"
+            }
+          }
+        },
+        {
+          "name": "Login User",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/login",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.token) {",
+                  "  pm.collectionVariables.set('token', jsonData.data.token);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/auth/me",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/logout",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/users/profile",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Smith\",\n  \"age\": 29,\n  \"gender\": \"male\",\n  \"height\": 178,\n  \"weight\": 72,\n  \"fitnessLevel\": \"intermediate\",\n  \"fitnessGoals\": [\"gain-muscle\", \"improve-cardio\"]\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Metrics",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/users/metrics",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"height\": 178,\n  \"weight\": 72,\n  \"age\": 29\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Preferences",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/users/preferences",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"preferredWorkoutDays\": [1, 3, 5],\n  \"preferredWorkoutTime\": \"morning\",\n  \"preferredWorkoutTypes\": [\"strength-training\", \"cardio\"]\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Stats",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/users/stats?period=month",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get Settings",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/users/settings",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Update Settings",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/users/settings",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"language\": \"en\",\n  \"timezone\": \"America/New_York\",\n  \"units\": {\n    \"weight\": \"kg\",\n    \"height\": \"cm\",\n    \"distance\": \"km\"\n  }\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Exercises",
+      "item": [
+        {
+          "name": "Get All Exercises",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/exercises?page=1&limit=10",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Create Exercise",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/exercises",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Push-up\",\n  \"category\": \"strength-training\",\n  \"muscleGroup\": [\"chest\", \"triceps\", \"shoulders\"],\n  \"difficultyLevel\": \"beginner\",\n  \"caloriesPerMinute\": 4.0,\n  \"description\": \"A bodyweight exercise that targets the chest, triceps, and shoulders.\",\n  \"instructions\": [\"Start in plank position\", \"Lower body\", \"Push back up\"],\n  \"equipmentNeeded\": []\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Workouts",
+      "item": [
+        {
+          "name": "Get Workout Plans",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/workouts?page=1&limit=10",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Create Workout Plan",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/workouts",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Full Body Strength\",\n  \"description\": \"A complete full body workout\",\n  \"category\": \"strength-training\",\n  \"difficultyLevel\": \"intermediate\",\n  \"duration\": 45,\n  \"exercises\": [\n    {\n      \"exerciseId\": \"EXERCISE_ID_1\",\n      \"sets\": 4,\n      \"reps\": 10,\n      \"duration\": 15,\n      \"restTime\": 60\n    }\n  ],\n  \"tags\": [\"strength\", \"full-body\"],\n  \"isPublic\": false\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Goals",
+      "item": [
+        {
+          "name": "Get Goals",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/goals?status=active",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Create Goal",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/goals",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"weight-loss\",\n  \"targetValue\": 5,\n  \"targetUnit\": \"kg\",\n  \"targetDate\": \"2026-12-31T23:59:59.999Z\",\n  \"notes\": \"Lose 5 kg by end of year\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Activities",
+      "item": [
+        {
+          "name": "Log Workout",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/activities",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"duration\": 45,\n  \"exercises\": [\n    {\n      \"exerciseId\": \"EXERCISE_ID\",\n      \"sets\": 4,\n      \"reps\": 10,\n      \"weight\": 60,\n      \"duration\": 15,\n      \"caloriesBurned\": 120\n    }\n  ],\n  \"perceivedExertion\": 7,\n  \"mood\": \"great\",\n  \"notes\": \"Good workout today\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Workout History",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/activities?page=1&limit=10",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Analytics",
+      "item": [
+        {
+          "name": "Get Summary",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/analytics/summary?period=month",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get Progress",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/analytics/progress?metric=workouts&period=month",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get Fitness Score",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/analytics/fitness-score",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Recommendations",
+      "item": [
+        {
+          "name": "Get Recommendations",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/recommendations",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get Workout Recommendations",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/recommendations/workouts?limit=5",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get Daily Recommendation",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/recommendations/daily",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Get Dashboard",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/dashboard",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get Weekly Summary",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/dashboard/weekly",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/health"
+          }
+        },
+        {
+          "name": "Welcome",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/"
+          }
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  }
+}
