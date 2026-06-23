@@ -4,27 +4,21 @@ const Exercise = require('../models/Exercise');
 
 dotenv.config();
 
-// Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 });
 
 const exercises = [
-  // Strength Training Exercises
+  // Strength Training
   {
     name: 'Bench Press',
     category: 'strength-training',
     muscleGroup: ['chest', 'triceps', 'shoulders'],
     difficultyLevel: 'intermediate',
     caloriesPerMinute: 5.5,
-    description: 'A compound exercise that targets the chest, triceps, and shoulders.',
-    instructions: [
-      'Lie flat on a bench with your feet on the ground',
-      'Grip the barbell with hands slightly wider than shoulder-width',
-      'Lower the bar to your chest',
-      'Push the bar back up to starting position'
-    ],
+    description: 'Compound exercise targeting chest, triceps, and shoulders.',
+    instructions: ['Lie flat on bench', 'Grip barbell', 'Lower to chest', 'Push up'],
     equipmentNeeded: ['barbell', 'bench'],
     isActive: true
   },
@@ -34,14 +28,9 @@ const exercises = [
     muscleGroup: ['legs', 'glutes', 'core'],
     difficultyLevel: 'intermediate',
     caloriesPerMinute: 6.0,
-    description: 'A compound exercise that targets the legs, glutes, and core.',
-    instructions: [
-      'Stand with feet shoulder-width apart',
-      'Lower your body by bending your knees and hips',
-      'Go down until your thighs are parallel to the ground',
-      'Push through your heels to return to standing'
-    ],
-    equipmentNeeded: ['barbell', 'squat rack'],
+    description: 'Compound exercise targeting legs, glutes, and core.',
+    instructions: ['Stand feet shoulder-width', 'Lower body', 'Push through heels'],
+    equipmentNeeded: ['barbell'],
     isActive: true
   },
   {
@@ -50,13 +39,8 @@ const exercises = [
     muscleGroup: ['back', 'glutes', 'legs', 'core'],
     difficultyLevel: 'advanced',
     caloriesPerMinute: 6.5,
-    description: 'A compound exercise that targets the posterior chain.',
-    instructions: [
-      'Stand with feet hip-width apart, barbell over mid-foot',
-      'Bend at hips and knees to grip the bar',
-      'Keep your back straight and lift the bar',
-      'Stand up straight with the bar at hip level'
-    ],
+    description: 'Compound exercise targeting posterior chain.',
+    instructions: ['Stand over barbell', 'Grip bar', 'Lift with straight back'],
     equipmentNeeded: ['barbell', 'weight plates'],
     isActive: true
   },
@@ -66,12 +50,8 @@ const exercises = [
     muscleGroup: ['chest', 'triceps', 'shoulders', 'core'],
     difficultyLevel: 'beginner',
     caloriesPerMinute: 4.0,
-    description: 'A bodyweight exercise that targets the chest, triceps, and shoulders.',
-    instructions: [
-      'Start in a plank position with hands under shoulders',
-      'Lower your body until your chest nearly touches the ground',
-      'Push back up to starting position'
-    ],
+    description: 'Bodyweight exercise targeting chest, triceps, and shoulders.',
+    instructions: ['Start in plank', 'Lower body', 'Push back up'],
     equipmentNeeded: [],
     isActive: true
   },
@@ -81,17 +61,13 @@ const exercises = [
     muscleGroup: ['back', 'biceps', 'shoulders'],
     difficultyLevel: 'advanced',
     caloriesPerMinute: 5.0,
-    description: 'A bodyweight exercise that targets the back and biceps.',
-    instructions: [
-      'Hang from a pull-up bar with hands shoulder-width apart',
-      'Pull your body up until your chin is above the bar',
-      'Lower yourself back down with control'
-    ],
+    description: 'Bodyweight exercise targeting back and biceps.',
+    instructions: ['Hang from bar', 'Pull body up', 'Lower with control'],
     equipmentNeeded: ['pull-up bar'],
     isActive: true
   },
 
-  // Cardio Exercises
+  // Cardio
   {
     name: 'Running',
     category: 'cardio',
@@ -99,12 +75,7 @@ const exercises = [
     difficultyLevel: 'intermediate',
     caloriesPerMinute: 8.5,
     description: 'High-intensity cardiovascular exercise.',
-    instructions: [
-      'Start with a warm-up walk',
-      'Begin running at a comfortable pace',
-      'Maintain proper form with arms swinging naturally',
-      'Cool down with a walk after running'
-    ],
+    instructions: ['Warm up walk', 'Start running', 'Cool down walk'],
     equipmentNeeded: ['running shoes'],
     isActive: true
   },
@@ -115,12 +86,7 @@ const exercises = [
     difficultyLevel: 'beginner',
     caloriesPerMinute: 7.0,
     description: 'Low-impact cardiovascular exercise.',
-    instructions: [
-      'Adjust seat height to proper level',
-      'Start pedaling at a comfortable pace',
-      'Maintain steady resistance',
-      'Alternate between sitting and standing positions'
-    ],
+    instructions: ['Adjust seat', 'Start pedaling', 'Maintain resistance'],
     equipmentNeeded: ['bicycle', 'helmet'],
     isActive: true
   },
@@ -130,32 +96,21 @@ const exercises = [
     muscleGroup: ['cardio', 'full-body'],
     difficultyLevel: 'beginner',
     caloriesPerMinute: 6.5,
-    description: 'A full-body cardio exercise.',
-    instructions: [
-      'Stand with feet together and arms at sides',
-      'Jump while spreading feet and raising arms overhead',
-      'Jump back to starting position'
-    ],
+    description: 'Full-body cardio exercise.',
+    instructions: ['Stand with feet together', 'Jump and spread feet', 'Jump back'],
     equipmentNeeded: [],
     isActive: true
   },
 
-  // HIIT Exercises
+  // HIIT
   {
     name: 'Burpee',
     category: 'hiit',
     muscleGroup: ['full-body', 'cardio'],
     difficultyLevel: 'advanced',
     caloriesPerMinute: 9.0,
-    description: 'A high-intensity full-body exercise.',
-    instructions: [
-      'Start in a standing position',
-      'Drop into a squat position and place hands on the ground',
-      'Kick feet back into a plank position',
-      'Perform a push-up',
-      'Jump feet back to squat position',
-      'Jump up with arms raised'
-    ],
+    description: 'High-intensity full-body exercise.',
+    instructions: ['Stand', 'Drop to squat', 'Kick feet back', 'Push-up', 'Jump up'],
     equipmentNeeded: [],
     isActive: true
   },
@@ -165,31 +120,21 @@ const exercises = [
     muscleGroup: ['core', 'cardio', 'shoulders'],
     difficultyLevel: 'intermediate',
     caloriesPerMinute: 8.0,
-    description: 'A high-intensity core and cardio exercise.',
-    instructions: [
-      'Start in a plank position',
-      'Drive one knee toward your chest',
-      'Quickly switch legs in a running motion',
-      'Maintain a flat back throughout'
-    ],
+    description: 'High-intensity core and cardio exercise.',
+    instructions: ['Start in plank', 'Drive knees to chest', 'Quickly switch legs'],
     equipmentNeeded: [],
     isActive: true
   },
 
-  // Yoga Exercises
+  // Yoga
   {
     name: 'Downward Dog',
     category: 'yoga',
-    muscleGroup: ['core', 'shoulders', 'hamstrings'],
+    muscleGroup: ['core', 'shoulders', 'legs'],
     difficultyLevel: 'beginner',
     caloriesPerMinute: 2.5,
-    description: 'A foundational yoga pose that stretches the entire body.',
-    instructions: [
-      'Start on all fours',
-      'Tuck toes and lift hips toward ceiling',
-      'Press chest toward thighs and heels toward ground',
-      'Hold for 5-10 breaths'
-    ],
+    description: 'Foundational yoga pose stretching the entire body.',
+    instructions: ['Start on all fours', 'Tuck toes', 'Lift hips to ceiling'],
     equipmentNeeded: ['yoga mat'],
     isActive: true
   },
@@ -199,59 +144,42 @@ const exercises = [
     muscleGroup: ['core', 'legs', 'shoulders'],
     difficultyLevel: 'beginner',
     caloriesPerMinute: 3.0,
-    description: 'A standing yoga pose that builds strength and balance.',
-    instructions: [
-      'Stand with feet wide apart',
-      'Turn right foot out and left foot in',
-      'Bend right knee while keeping left leg straight',
-      'Reach arms up and hold'
-    ],
+    description: 'Standing yoga pose building strength and balance.',
+    instructions: ['Stand wide', 'Turn right foot', 'Bend right knee', 'Reach arms up'],
     equipmentNeeded: ['yoga mat'],
     isActive: true
   },
 
-  // Flexibility Exercises
+  // Flexibility
   {
     name: 'Hamstring Stretch',
     category: 'flexibility',
-    muscleGroup: ['legs', 'hamstrings'],
+    muscleGroup: ['legs'],
     difficultyLevel: 'beginner',
     caloriesPerMinute: 1.5,
-    description: 'A stretch targeting the hamstrings.',
-    instructions: [
-      'Sit on the ground with legs extended',
-      'Reach forward toward your toes',
-      'Hold the stretch for 30 seconds'
-    ],
+    description: 'Stretch targeting the hamstrings.',
+    instructions: ['Sit with legs extended', 'Reach toward toes', 'Hold for 30 seconds'],
     equipmentNeeded: ['yoga mat'],
     isActive: true
   },
   {
     name: 'Quad Stretch',
     category: 'flexibility',
-    muscleGroup: ['legs', 'quads'],
+    muscleGroup: ['legs'],
     difficultyLevel: 'beginner',
     caloriesPerMinute: 1.5,
-    description: 'A stretch targeting the quadriceps.',
-    instructions: [
-      'Stand on one leg',
-      'Pull the other foot toward your glutes',
-      'Hold the stretch for 30 seconds',
-      'Switch sides'
-    ],
+    description: 'Stretch targeting the quadriceps.',
+    instructions: ['Stand on one leg', 'Pull foot toward glutes', 'Hold for 30 seconds'],
     equipmentNeeded: [],
     isActive: true
   }
 ];
 
-// Seed function
 const seedExercises = async () => {
   try {
-    // Clear existing exercises
     await Exercise.deleteMany({});
     console.log('🧹 Existing exercises removed');
 
-    // Insert new exercises
     await Exercise.insertMany(exercises);
     console.log(`✅ ${exercises.length} exercises seeded successfully`);
 
@@ -262,5 +190,4 @@ const seedExercises = async () => {
   }
 };
 
-// Run seed
 seedExercises();
